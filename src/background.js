@@ -27,7 +27,12 @@ function restoreTabVolumes() {
   
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, _) {
     if (changeInfo.audible) {
-        reduceTabVolumes(tabId)
+        chrome.tabs.get(tabId, function(tab) {
+            if(tab.active)
+            {
+                reduceTabVolumes(tabId)
+            }
+        })
     } else if (!changeInfo.audible) {
         restoreTabVolumes()
     }
