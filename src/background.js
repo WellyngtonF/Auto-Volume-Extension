@@ -1,3 +1,4 @@
+let activeTab
 // Function to reduce volume in all tabs
 function reduceTabVolumes(tabId) {
     chrome.tabs.query({}, function (tabs) {
@@ -30,10 +31,11 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, _) {
         chrome.tabs.get(tabId, function(tab) {
             if(tab.active)
             {
+                activeTab = tabId;
                 reduceTabVolumes(tabId)
             }
         })
-    } else if (!changeInfo.audible) {
+    } else if (!changeInfo.audible && tabId == activeTab) {
         restoreTabVolumes()
     }
 });
@@ -41,6 +43,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, _) {
 chrome.tabs.onActivated.addListener(function (activeInfo) {
     chrome.tabs.get(activeInfo.tabId, function (tab) {
         if (tab.audible) {
+            activeTab = activeInfo.tabId;
             reduceTabVolumes(activeInfo.tabId);
         }
     });
